@@ -1,6 +1,8 @@
 # IoT Watch — Docker Compose
 # Usage: docker compose -f docker/docker-compose.yml up -d
 
+name: iotwatch
+
 services:
   mqtt:
     image: eclipse-mosquitto:2
