@@ -21,3 +21,6 @@ node_modules/
 
 # Docs
 docs/
+
+# Cursor rules and project config
+.cursor/
