@@ -17,7 +17,7 @@ Lightweight IoT platform for multi-device telemetry monitoring, real-time dashbo
 | MQTT Broker | Mosquitto |
 | Backend | FastAPI, SQLAlchemy |
 | Database | PostgreSQL |
-| Frontend | Next.js |
+| Frontend | React + Vite |
 | Device Simulator | Python (paho-mqtt) |
 
 ## Quick Start
@@ -32,7 +32,12 @@ Lightweight IoT platform for multi-device telemetry monitoring, real-time dashbo
    cd simulator && python main.py
    ```
 
-3. Open the Dashboard: http://localhost:8000
+3. Start the frontend dev server:
+   ```bash
+   cd frontend && pnpm dev
+   ```
+
+4. Open the Dashboard: http://localhost:3000
 
 4. API documentation: http://localhost:8000/docs
 
@@ -45,8 +50,8 @@ Lightweight IoT platform for multi-device telemetry monitoring, real-time dashbo
 │   ├── alerts/        # alert module
 │   ├── main.py
 │   └── requirements.txt
-├── frontend/          # Next.js dashboard
-│   ├── app/
+├── frontend/          # React + Vite dashboard
+│   ├── src/
 │   └── package.json
 ├── simulator/         # device simulator (Python)
 │   ├── main.py
