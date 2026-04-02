@@ -1,0 +1,29 @@
+.app { display: flex; flex-direction: column; min-height: 100vh; }
+
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 0 2rem;
+  height: 56px;
+  background: #1a1a2e;
+  color: #fff;
+}
+
+.app-logo { font-size: 1.1rem; font-weight: 700; letter-spacing: 0.05em; }
+
+.app-header nav { display: flex; gap: 1rem; }
+
+.app-header nav a {
+  color: #aaa;
+  text-decoration: none;
+  font-size: 0.9rem;
+  padding: 4px 0;
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.app-header nav a:hover { color: #fff; }
+.app-header nav a.active { color: #fff; border-bottom-color: #4a9eff; }
+
+.app-main { flex: 1; padding: 2rem; max-width: 1100px; margin: 0 auto; width: 100%; }
