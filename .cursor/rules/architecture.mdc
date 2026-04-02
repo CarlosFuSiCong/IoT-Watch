@@ -14,6 +14,32 @@ alwaysApply: false
 - **Repository**: ORM access only. Return model instances. No business rules.
 - **Response format**: `{ success, data }` on success; `{ success, message, errors }` on error.
 
+### Directory Structure
+
+```
+backend/
+  devices/
+    models.py     # Device ORM model, DeviceStatus enum
+    schemas.py    # Pydantic DeviceResponse
+    router.py
+    service.py
+    repository.py
+  telemetry/
+    models.py     # SensorData ORM model
+    schemas.py
+    ...
+  alerts/
+    models.py     # Alert ORM model, AlertType enum
+    schemas.py
+    ...
+  database.py     # engine, SessionLocal, Base, get_db
+  main.py
+```
+
+- ORM models live **inside each feature module** (`devices/models.py`, etc.), not in a shared `models.py`.
+- Cross-module foreign keys use **string table names** (e.g. `ForeignKey("devices.id")`) to avoid circular imports.
+- Alembic `env.py` must import all module models explicitly so migrations discover all tables.
+
 ## MQTT
 
 - **Subscribe**: Backend subscribes to `devices/+/telemetry`
