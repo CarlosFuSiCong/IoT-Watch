@@ -29,7 +29,7 @@ def list_alerts(
     if alert_type is not None:
         filters.append(Alert.type == alert_type)
 
-    base = select(Alert).where(and_(*filters))
+    base = select(Alert).where(and_(True, *filters))
     total = db.scalar(select(func.count()).select_from(base.subquery())) or 0
     items = list(
         db.scalars(
