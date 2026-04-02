@@ -19,8 +19,5 @@ node_modules/
 # Logs
 *.log
 
-# Docs
-docs/
-
 # Cursor rules and project config
 .cursor/

@@ -28,6 +28,104 @@
 .meta-chip.online  { border-color: var(--online);  color: var(--online); }
 .meta-chip.offline { border-color: var(--offline); color: var(--offline); }
 
+/* ── Section sub-heading ── */
+.section-title {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+  margin-bottom: 0.75rem;
+}
+
+/* ── Overview stat grid ── */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border: 1px solid var(--border);
+}
+
+.stat-box {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 1.5rem 1.25rem;
+  border-left: 3px solid transparent;
+}
+
+.stat-box + .stat-box { border-left-color: transparent; border-left-width: 1px; }
+
+.stat-box:first-child { border-left-width: 3px; }
+
+/* Set border-left colors via inline style (from TS) */
+
+.stat-value {
+  font-size: 2.2rem;
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.stat-label {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+@media (max-width: 640px) {
+  .stat-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ── Device detail metrics ── */
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: 1px solid var(--border);
+}
+
+.metric-box {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 1.25rem 1rem;
+}
+
+.metric-box + .metric-box { border-left: 1px solid var(--border); }
+
+.metric-label {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+}
+
+.metric-value {
+  font-size: 2rem;
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.metric-unit {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+@media (max-width: 480px) {
+  .metric-grid { grid-template-columns: 1fr; }
+  .metric-box + .metric-box { border-left: none; border-top: 1px solid var(--border); }
+}
+
+/* ── Temperature chart ── */
+.chart-section { display: flex; flex-direction: column; }
+
+.chart-wrap {
+  border: 1px solid var(--border);
+  padding: 1rem 0.5rem 0.5rem;
+}
+
 /* ── Data table ── */
 .data-table {
   width: 100%;
@@ -54,6 +152,28 @@
 .data-table td { font-size: 12px; }
 
 .data-table tbody tr:hover { background: #f4f4f4; }
+
+/* ── Clickable rows ── */
+.row-link { cursor: pointer; }
+
+.row-anchor {
+  color: inherit;
+  text-decoration: none;
+  display: block;
+  width: 100%;
+}
+
+.row-anchor:hover { text-decoration: underline; }
+
+/* ── Breadcrumb ── */
+.breadcrumb {
+  color: var(--muted);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.breadcrumb:hover { color: var(--fg); }
+.breadcrumb-sep   { color: var(--muted); font-weight: 300; }
 
 /* ── Utilities ── */
 .mono    { font-family: var(--font); }
