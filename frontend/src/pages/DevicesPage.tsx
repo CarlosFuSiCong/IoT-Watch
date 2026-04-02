@@ -2,14 +2,10 @@ import { useQueries, useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import client from '../api/client'
 import type { ApiResponse, Device, SensorData, TelemetryPage } from '../api/types'
+import DeviceStatus from '../components/DeviceStatus'
+import { DEG_C, fmtDateTimeFull } from '../lib/utils'
 
-const fmt = (iso: string) =>
-  new Date(iso).toLocaleString('en-GB', {
-    year: '2-digit', month: '2-digit', day: '2-digit',
-    hour: '2-digit', minute: '2-digit', second: '2-digit',
-  })
-
-const COLS = ['ID', 'Status', 'Temp (?C)', 'Battery (%)', 'Last Seen'] as const
+const COLS = ['ID', 'Status', `Temp (${DEG_C})`, 'Battery (%)', 'Last Seen'] as const
 
 export default function DevicesPage() {
   const { data: devices, isLoading, isError } = useQuery({
@@ -59,7 +55,7 @@ export default function DevicesPage() {
         </div>
       </header>
 
-      {isError && <p className="state-msg error">ERR ? could not reach backend</p>}
+      {isError && <p className="state-msg error">ERR -- could not reach backend</p>}
 
       {!isLoading && !isError && total === 0 && (
         <p className="state-msg">NO DEVICES REGISTERED</p>
@@ -78,19 +74,14 @@ export default function DevicesPage() {
                   <td className="mono dim">
                     <Link to={`/devices/${d.id}`} className="row-anchor">{d.id}</Link>
                   </td>
-                  <td>
-                    <span className={`status-dot ${d.status}`} />
-                    <span className={d.status === 'online' ? 'txt-online' : 'txt-offline'}>
-                      {d.status.toUpperCase()}
-                    </span>
-                  </td>
+                  <td><DeviceStatus status={d.status} /></td>
                   <td className={latest && latest.temperature > 35 ? 'txt-offline' : ''}>
                     {latest ? latest.temperature.toFixed(1) : '--'}
                   </td>
                   <td className={latest && latest.battery < 20 ? 'txt-offline' : ''}>
                     {latest ? latest.battery.toFixed(0) : '--'}
                   </td>
-                  <td className="dim">{fmt(d.last_seen)}</td>
+                  <td className="dim">{fmtDateTimeFull(d.last_seen)}</td>
                 </tr>
               )
             })}

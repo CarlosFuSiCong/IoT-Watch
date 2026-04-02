@@ -1,26 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import client from '../api/client'
-import type { ApiResponse, AlertPage, AlertType } from '../api/types'
-
-const TYPE_LABEL: Record<AlertType, string> = {
-  HIGH_TEMPERATURE: 'HIGH TEMP',
-  LOW_BATTERY:      'LOW BATT',
-  OFFLINE:          'OFFLINE',
-}
-
-const TYPE_CLASS: Record<AlertType, string> = {
-  HIGH_TEMPERATURE: 'alert-temp',
-  LOW_BATTERY:      'alert-batt',
-  OFFLINE:          'alert-offline',
-}
-
-const fmt = (iso: string) =>
-  new Date(iso).toLocaleString('en-GB', {
-    year: '2-digit', month: '2-digit', day: '2-digit',
-    hour: '2-digit', minute: '2-digit', second: '2-digit',
-  })
-
-const COLS = ['Time', 'Device', 'Type', 'Message'] as const
+import type { ApiResponse, AlertPage } from '../api/types'
+import AlertsTable from '../components/AlertsTable'
 
 export default function AlertsPage() {
   const { data, isLoading, isError } = useQuery({
@@ -47,36 +28,14 @@ export default function AlertsPage() {
         </div>
       </header>
 
-      {isError && (
-        <p className="state-msg error">ERR ? could not reach backend</p>
-      )}
+      {isError && <p className="state-msg error">ERR -- could not reach backend</p>}
 
       {!isLoading && !isError && items.length === 0 && (
         <p className="state-msg">NO ALERTS</p>
       )}
 
       {!isLoading && !isError && items.length > 0 && (
-        <table className="data-table">
-          <thead>
-            <tr>
-              {COLS.map(h => <th key={h}>{h}</th>)}
-            </tr>
-          </thead>
-          <tbody>
-            {items.map(a => (
-              <tr key={a.id}>
-                <td className="dim nowrap">{fmt(a.timestamp)}</td>
-                <td className="mono dim">{a.device_id}</td>
-                <td>
-                  <span className={`alert-type ${TYPE_CLASS[a.type]}`}>
-                    {TYPE_LABEL[a.type]}
-                  </span>
-                </td>
-                <td className="msg">{a.message}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <AlertsTable items={items} showDevice />
       )}
     </section>
   )
