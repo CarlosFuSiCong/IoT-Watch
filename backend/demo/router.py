@@ -48,4 +48,5 @@ def stop_demo():
 
 @router.get("/status", summary="Check simulator status")
 def demo_status():
-    return {"running": _is_running()}
+    with _lock:
+        return {"running": _is_running()}

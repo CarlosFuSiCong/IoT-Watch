@@ -47,7 +47,7 @@ def check_battery_alert(
     if battery >= AlertThresholds.LOW_BATTERY:
         return
     # Skip if the previous reading was already below threshold (continuous low-battery state)
-    if prev_battery is not None and prev_battery < AlertThresholds.LOW_BATTERY:
+    if prev_battery is not None and prev_battery <= AlertThresholds.LOW_BATTERY:
         return
     message = (
         f"Device {device_id} battery low: "
