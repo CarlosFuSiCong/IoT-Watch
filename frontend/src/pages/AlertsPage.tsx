@@ -2,20 +2,25 @@ import { useQuery } from '@tanstack/react-query'
 import client from '../api/client'
 import type { ApiResponse, AlertPage, AlertType } from '../api/types'
 
-const TYPE_COLORS: Record<AlertType, { bg: string; fg: string }> = {
-  HIGH_TEMPERATURE: { bg: '#fff3cd', fg: '#856404' },
-  LOW_BATTERY:      { bg: '#fce4ec', fg: '#880e4f' },
-  OFFLINE:          { bg: '#ede7f6', fg: '#4527a0' },
+const TYPE_LABEL: Record<AlertType, string> = {
+  HIGH_TEMPERATURE: 'HIGH TEMP',
+  LOW_BATTERY:      'LOW BATT',
+  OFFLINE:          'OFFLINE',
 }
 
-function typeBadge(type: AlertType) {
-  const { bg, fg } = TYPE_COLORS[type] ?? { bg: '#eee', fg: '#333' }
-  return (
-    <span style={{ padding: '2px 10px', borderRadius: 12, fontSize: '0.8rem', fontWeight: 600, background: bg, color: fg }}>
-      {type.replace('_', ' ')}
-    </span>
-  )
+const TYPE_CLASS: Record<AlertType, string> = {
+  HIGH_TEMPERATURE: 'alert-temp',
+  LOW_BATTERY:      'alert-batt',
+  OFFLINE:          'alert-offline',
 }
+
+const fmt = (iso: string) =>
+  new Date(iso).toLocaleString('en-GB', {
+    year: '2-digit', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit',
+  })
+
+const COLS = ['Time', 'Device', 'Type', 'Message'] as const
 
 export default function AlertsPage() {
   const { data, isLoading, isError } = useQuery({
@@ -27,32 +32,47 @@ export default function AlertsPage() {
     refetchInterval: 15_000,
   })
 
-  if (isLoading) return <p>Loading alerts…</p>
-  if (isError) return <p style={{ color: 'red' }}>Failed to load alerts.</p>
-
   const items = data?.items ?? []
 
   return (
-    <section>
-      <h2 style={{ marginBottom: '1rem' }}>Alerts ({data?.total ?? 0})</h2>
-      {!items.length ? (
-        <p>No alerts yet.</p>
-      ) : (
-        <table style={{ width: '100%', borderCollapse: 'collapse', background: '#fff', borderRadius: 8, overflow: 'hidden', boxShadow: '0 1px 4px rgba(0,0,0,.08)' }}>
-          <thead style={{ background: '#f0f0f5' }}>
+    <section className="page">
+      <header className="page-head">
+        <h1 className="page-title">ALERTS</h1>
+        <div className="page-meta">
+          {isLoading ? (
+            <span className="meta-chip">LOADING</span>
+          ) : (
+            <span className="meta-chip">{data?.total ?? 0} TOTAL</span>
+          )}
+        </div>
+      </header>
+
+      {isError && (
+        <p className="state-msg error">ERR — could not reach backend</p>
+      )}
+
+      {!isLoading && !isError && items.length === 0 && (
+        <p className="state-msg">NO ALERTS</p>
+      )}
+
+      {!isLoading && !isError && items.length > 0 && (
+        <table className="data-table">
+          <thead>
             <tr>
-              {['Time', 'Device', 'Type', 'Message'].map(h => (
-                <th key={h} style={{ padding: '10px 14px', textAlign: 'left', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{h}</th>
-              ))}
+              {COLS.map(h => <th key={h}>{h}</th>)}
             </tr>
           </thead>
           <tbody>
-            {items.map((a, i) => (
-              <tr key={a.id} style={{ borderTop: i ? '1px solid #eee' : undefined }}>
-                <td style={{ padding: '10px 14px', color: '#666', fontSize: '0.85rem', whiteSpace: 'nowrap' }}>{new Date(a.timestamp).toLocaleString()}</td>
-                <td style={{ padding: '10px 14px', fontFamily: 'monospace' }}>{a.device_id}</td>
-                <td style={{ padding: '10px 14px' }}>{typeBadge(a.type)}</td>
-                <td style={{ padding: '10px 14px', color: '#444' }}>{a.message}</td>
+            {items.map(a => (
+              <tr key={a.id}>
+                <td className="dim nowrap">{fmt(a.timestamp)}</td>
+                <td className="mono dim">{a.device_id}</td>
+                <td>
+                  <span className={`alert-type ${TYPE_CLASS[a.type]}`}>
+                    {TYPE_LABEL[a.type]}
+                  </span>
+                </td>
+                <td className="msg">{a.message}</td>
               </tr>
             ))}
           </tbody>
