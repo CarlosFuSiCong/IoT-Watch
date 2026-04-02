@@ -6,6 +6,7 @@
 #   LOW_BATTERY       — battery drains 1-3% per reading; resets to 60-90% after reaching 5%
 #   OFFLINE           — each device has a ~6% chance per cycle to pause 10-15 s (> 8 s threshold)
 import json
+import os
 import random
 import time
 import threading
@@ -13,8 +14,8 @@ from datetime import datetime, timezone
 
 import paho.mqtt.client as mqtt
 
-MQTT_HOST = "localhost"
-MQTT_PORT = 1883
+MQTT_HOST = os.getenv("MQTT_HOST", "localhost")
+MQTT_PORT = int(os.getenv("MQTT_PORT", "1883"))
 DEVICE_IDS = ["warehouse-01", "warehouse-02", "warehouse-03"]
 
 TEMP_NORMAL_RANGE  = (22.0, 34.0)   # stays below HIGH_TEMPERATURE threshold

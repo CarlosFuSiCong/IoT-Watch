@@ -1,9 +1,12 @@
 # IoT Watch — Docker Compose
-# Usage: docker compose -f docker/docker-compose.yml up -d
+# Usage: docker compose -f docker/docker-compose.yml up -d --build
 
 name: iotwatch
 
 services:
+
+  # ── Infrastructure ────────────────────────────────────────────────────────
+
   mqtt:
     image: eclipse-mosquitto:2
     ports:
@@ -14,15 +17,45 @@ services:
   db:
     image: postgres:16-alpine
     environment:
-      POSTGRES_USER: iotwatch
+      POSTGRES_USER:     iotwatch
       POSTGRES_PASSWORD: iotwatch
-      POSTGRES_DB: iotwatch
+      POSTGRES_DB:       iotwatch
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U iotwatch"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
-  # backend: uncomment when backend/ exists, build via docker/Dockerfile.backend
+  # ── Application ───────────────────────────────────────────────────────────
+
+  backend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.backend
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://iotwatch:iotwatch@db:5432/iotwatch
+      MQTT_HOST:    mqtt
+      MQTT_PORT:    "1883"
+    depends_on:
+      db:
+        condition: service_healthy
+      mqtt:
+        condition: service_started
+
+  frontend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
 
 volumes:
   postgres_data:
