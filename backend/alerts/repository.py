@@ -24,12 +24,12 @@ def list_alerts(
     limit: int = 50,
 ) -> tuple[list[Alert], int]:
     filters = []
-    if device_id:
+    if device_id is not None:
         filters.append(Alert.device_id == device_id)
-    if alert_type:
+    if alert_type is not None:
         filters.append(Alert.type == alert_type)
 
-    base = select(Alert).where(*filters)
+    base = select(Alert).where(and_(*filters))
     total = db.scalar(select(func.count()).select_from(base.subquery())) or 0
     items = list(
         db.scalars(

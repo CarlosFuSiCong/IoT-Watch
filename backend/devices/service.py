@@ -15,16 +15,29 @@ async def offline_checker() -> None:
     logger.info("offline checker started")
     while True:
         await asyncio.sleep(CHECK_INTERVAL_SECONDS)
+
         db = SessionLocal()
         try:
             stale = mark_offline_devices(db)
-            if stale:
-                # create offline alerts for newly stale devices
-                device_ids = [device.id for device in stale]
-                create_offline_alerts(db, device_ids)
-                db.commit()
+            db.commit()
         except Exception:
             db.rollback()
-            logger.exception("error during offline check")
+            logger.exception("error marking devices offline")
+            stale = []
+        finally:
+            db.close()
+
+        if not stale:
+            continue
+
+        # separate transaction: alert failures must not roll back device status changes
+        device_ids = [device.id for device in stale]
+        db = SessionLocal()
+        try:
+            create_offline_alerts(db, device_ids)
+            db.commit()
+        except Exception:
+            db.rollback()
+            logger.exception("error creating offline alerts")
         finally:
             db.close()

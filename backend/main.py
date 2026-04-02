@@ -22,6 +22,7 @@ async def lifespan(app: FastAPI):
     task = asyncio.create_task(offline_checker())
     yield
     task.cancel()
+    await asyncio.gather(task, return_exceptions=True)
     mqtt.stop()
 
 
