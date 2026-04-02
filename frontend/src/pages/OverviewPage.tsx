@@ -34,13 +34,13 @@ export default function OverviewPage() {
       const res = await client.get<ApiResponse<AlertPage>>('/alerts?limit=5')
       return res.data.data
     },
-    refetchInterval: 15_000,
+    refetchInterval: 3_000,
   })
 
-  const total   = devices?.length ?? 'â€?
-  const online  = devices?.filter(d => d.status === 'online').length ?? 'â€?
-  const offline = devices?.filter(d => d.status === 'offline').length ?? 'â€?
-  const alerts  = alertPage?.total ?? 'â€?
+  const total   = devices?.length ?? '--'
+  const online  = devices?.filter(d => d.status === 'online').length ?? '--'
+  const offline = devices?.filter(d => d.status === 'offline').length ?? '--'
+  const alerts  = alertPage?.total ?? '--'
 
   const recentAlerts = alertPage?.items ?? []
 
@@ -57,7 +57,6 @@ export default function OverviewPage() {
         <StatBox label="TOTAL ALERTS" value={alerts}  accent="var(--warn)" />
       </div>
 
-      {/* Recent alerts strip */}
       {recentAlerts.length > 0 && (
         <div>
           <h2 className="section-title">RECENT ALERTS</h2>
@@ -94,7 +93,6 @@ export default function OverviewPage() {
         </div>
       )}
 
-      {/* Device quick list */}
       {(devices?.length ?? 0) > 0 && (
         <div>
           <h2 className="section-title">DEVICES</h2>
@@ -111,8 +109,7 @@ export default function OverviewPage() {
                     <Link to={`/devices/${d.id}`} className="row-anchor">{d.id}</Link>
                   </td>
                   <td>
-                    <span className={`status-dot ${d.status}`}>â—?/span>
-                    {' '}
+                    <span className={`status-dot ${d.status}`} />
                     <span className={d.status === 'online' ? 'txt-online' : 'txt-offline'}>
                       {d.status.toUpperCase()}
                     </span>

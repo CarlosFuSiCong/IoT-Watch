@@ -48,7 +48,7 @@ export default function AlertsPage() {
       </header>
 
       {isError && (
-        <p className="state-msg error">ERR â€?could not reach backend</p>
+        <p className="state-msg error">ERR ? could not reach backend</p>
       )}
 
       {!isLoading && !isError && items.length === 0 && (

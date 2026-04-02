@@ -11,12 +11,32 @@ import {
   ReferenceLine,
 } from 'recharts'
 import client from '../api/client'
-import type { ApiResponse, Device, TelemetryPage } from '../api/types'
+import type { ApiResponse, Device, TelemetryPage, AlertPage, AlertType } from '../api/types'
+
+const DEG_C = '\u00B0C'
 
 const fmtTime = (iso: string) =>
   new Date(iso).toLocaleTimeString('en-GB', {
     hour: '2-digit', minute: '2-digit', second: '2-digit',
   })
+
+const fmtDateTime = (iso: string) =>
+  new Date(iso).toLocaleString('en-GB', {
+    month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit',
+  })
+
+const TYPE_LABEL: Record<AlertType, string> = {
+  HIGH_TEMPERATURE: 'HIGH TEMP',
+  LOW_BATTERY:      'LOW BATT',
+  OFFLINE:          'OFFLINE',
+}
+
+const TYPE_CLASS: Record<AlertType, string> = {
+  HIGH_TEMPERATURE: 'alert-temp',
+  LOW_BATTERY:      'alert-batt',
+  OFFLINE:          'alert-offline',
+}
 
 interface MetricProps {
   label: string
@@ -62,10 +82,23 @@ export default function DeviceDetailPage() {
     refetchInterval: 3_000,
   })
 
+  const { data: alertPage } = useQuery({
+    queryKey: ['alerts', 'device', id],
+    queryFn: async () => {
+      const res = await client.get<ApiResponse<AlertPage>>(
+        `/alerts?device_id=${id}&limit=20`
+      )
+      return res.data.data
+    },
+    enabled: !!id,
+    refetchInterval: 3_000,
+  })
+
   const items = telemetryPage?.items ?? []
   const latest = items[0]
+  const deviceAlerts = alertPage?.items ?? []
 
-  // Chart data: oldest â†?newest
+  // Chart data: oldest to newest
   const chartData = [...items].reverse().map(r => ({
     t:    fmtTime(r.timestamp),
     temp: r.temperature,
@@ -74,7 +107,7 @@ export default function DeviceDetailPage() {
   if (deviceError) {
     return (
       <section className="page">
-        <p className="state-msg error">ERR â€?device not found</p>
+        <p className="state-msg error">ERR -- device not found</p>
       </section>
     )
   }
@@ -100,7 +133,7 @@ export default function DeviceDetailPage() {
           <Metric
             label="TEMPERATURE"
             value={latest.temperature.toFixed(1)}
-            unit="Â°C"
+            unit={DEG_C}
             warn={latest.temperature > 35}
           />
           <Metric
@@ -122,7 +155,7 @@ export default function DeviceDetailPage() {
       {/* Temperature chart */}
       {chartData.length > 1 && (
         <div className="chart-section">
-          <h2 className="section-title">TEMPERATURE â€?LAST {chartData.length} READINGS</h2>
+          <h2 className="section-title">TEMPERATURE -- LAST {chartData.length} READINGS</h2>
           <div className="chart-wrap">
             <ResponsiveContainer width="100%" height={220}>
               <LineChart data={chartData} margin={{ top: 8, right: 16, left: -16, bottom: 0 }}>
@@ -154,13 +187,13 @@ export default function DeviceDetailPage() {
                     background: '#fff',
                   }}
                   itemStyle={{ color: 'var(--fg)' }}
-                  formatter={(v: number) => [`${v.toFixed(1)} Â°C`, 'Temp']}
+                  formatter={(v: number) => [`${v.toFixed(1)} ${DEG_C}`, 'Temp']}
                 />
                 <ReferenceLine
                   y={35}
                   stroke="var(--offline)"
                   strokeDasharray="3 3"
-                  label={{ value: '35Â°C', position: 'right', fontSize: 9, fontFamily: 'var(--font)', fill: 'var(--offline)' }}
+                  label={{ value: `35 ${DEG_C}`, position: 'right', fontSize: 9, fontFamily: 'var(--font)', fill: 'var(--offline)' }}
                 />
                 <Line
                   type="monotone"
@@ -183,7 +216,7 @@ export default function DeviceDetailPage() {
           <table className="data-table">
             <thead>
               <tr>
-                {['Time', 'Temp (Â°C)', 'Humidity (%)', 'Battery (%)'].map(h => (
+                {['Time', `Temp (${DEG_C})`, 'Humidity (%)', 'Battery (%)'].map(h => (
                   <th key={h}>{h}</th>
                 ))}
               </tr>
@@ -205,6 +238,40 @@ export default function DeviceDetailPage() {
           </table>
         </div>
       )}
+
+      {/* Device alerts */}
+      <div>
+        <h2 className="section-title">
+          ALERTS
+          {alertPage && alertPage.total > 0 && (
+            <span className="section-count">{alertPage.total} TOTAL</span>
+          )}
+        </h2>
+        {deviceAlerts.length === 0 ? (
+          <p className="state-msg">NO ALERTS</p>
+        ) : (
+          <table className="data-table">
+            <thead>
+              <tr>
+                {['Time', 'Type', 'Message'].map(h => <th key={h}>{h}</th>)}
+              </tr>
+            </thead>
+            <tbody>
+              {deviceAlerts.map(a => (
+                <tr key={a.id}>
+                  <td className="dim nowrap">{fmtDateTime(a.timestamp)}</td>
+                  <td>
+                    <span className={`alert-type ${TYPE_CLASS[a.type]}`}>
+                      {TYPE_LABEL[a.type]}
+                    </span>
+                  </td>
+                  <td className="msg">{a.message}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
     </section>
   )
 }

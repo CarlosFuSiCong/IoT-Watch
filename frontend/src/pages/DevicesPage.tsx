@@ -9,7 +9,7 @@ const fmt = (iso: string) =>
     hour: '2-digit', minute: '2-digit', second: '2-digit',
   })
 
-const COLS = ['ID', 'Status', 'Temp (Â°C)', 'Battery (%)', 'Last Seen'] as const
+const COLS = ['ID', 'Status', 'Temp (?C)', 'Battery (%)', 'Last Seen'] as const
 
 export default function DevicesPage() {
   const { data: devices, isLoading, isError } = useQuery({
@@ -21,7 +21,6 @@ export default function DevicesPage() {
     refetchInterval: 3_000,
   })
 
-  // Fetch latest telemetry for each device in parallel
   const telemetryQueries = useQueries({
     queries: (devices ?? []).map(d => ({
       queryKey: ['telemetry', d.id, 'latest'],
@@ -41,8 +40,8 @@ export default function DevicesPage() {
     latestByDevice[d.id] = telemetryQueries[i]?.data ?? null
   })
 
-  const online  = devices?.filter(d => d.status === 'online').length ?? 0
-  const total   = devices?.length ?? 0
+  const online = devices?.filter(d => d.status === 'online').length ?? 0
+  const total  = devices?.length ?? 0
 
   return (
     <section className="page">
@@ -60,7 +59,7 @@ export default function DevicesPage() {
         </div>
       </header>
 
-      {isError && <p className="state-msg error">ERR â€?could not reach backend</p>}
+      {isError && <p className="state-msg error">ERR ? could not reach backend</p>}
 
       {!isLoading && !isError && total === 0 && (
         <p className="state-msg">NO DEVICES REGISTERED</p>
@@ -80,17 +79,16 @@ export default function DevicesPage() {
                     <Link to={`/devices/${d.id}`} className="row-anchor">{d.id}</Link>
                   </td>
                   <td>
-                    <span className={`status-dot ${d.status}`}>â—?/span>
-                    {' '}
+                    <span className={`status-dot ${d.status}`} />
                     <span className={d.status === 'online' ? 'txt-online' : 'txt-offline'}>
                       {d.status.toUpperCase()}
                     </span>
                   </td>
                   <td className={latest && latest.temperature > 35 ? 'txt-offline' : ''}>
-                    {latest ? latest.temperature.toFixed(1) : 'â€?}
+                    {latest ? latest.temperature.toFixed(1) : '--'}
                   </td>
                   <td className={latest && latest.battery < 20 ? 'txt-offline' : ''}>
-                    {latest ? latest.battery.toFixed(0) : 'â€?}
+                    {latest ? latest.battery.toFixed(0) : '--'}
                   </td>
                   <td className="dim">{fmt(d.last_seen)}</td>
                 </tr>

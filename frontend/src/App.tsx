@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Routes, Route, NavLink } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
 import OverviewPage     from './pages/OverviewPage'
@@ -13,6 +13,13 @@ type SimState = 'idle' | 'running' | 'error'
 export default function App() {
   const queryClient = useQueryClient()
   const [simState, setSimState] = useState<SimState>('idle')
+
+  // Sync button state with backend on mount
+  useEffect(() => {
+    client.get<{ running: boolean }>('/demo/status')
+      .then(res => { if (res.data.running) setSimState('running') })
+      .catch(() => {})
+  }, [])
 
   async function handleSimulate() {
     if (simState === 'running') {
