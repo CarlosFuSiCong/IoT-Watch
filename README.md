@@ -39,20 +39,20 @@ Lightweight IoT platform for multi-device telemetry monitoring, real-time dashbo
 ## Project Structure
 
 ```
-├── backend/           # FastAPI 后端
-│   ├── devices/       # 设备模块
-│   ├── telemetry/     # 遥测模块
-│   ├── alerts/        # 告警模块
+├── backend/           # FastAPI backend
+│   ├── devices/       # device module
+│   ├── telemetry/     # telemetry module
+│   ├── alerts/        # alert module
 │   ├── main.py
 │   └── requirements.txt
-├── frontend/          # Next.js Dashboard
+├── frontend/          # Next.js dashboard
 │   ├── app/
 │   └── package.json
-├── simulator/         # 设备模拟器 (Python)
+├── simulator/         # device simulator (Python)
 │   ├── main.py
 │   └── requirements.txt
-├── docker/            # Docker 编排与配置
-├── docs/              # 项目文档
+├── docker/            # Docker compose and config
+├── docs/              # project documentation
 └── README.md
 ```
 
