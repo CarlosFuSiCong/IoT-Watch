@@ -101,7 +101,7 @@ export default function OverviewPage() {
           <table className="data-table">
             <thead>
               <tr>
-                {['ID', 'Name', 'Status', 'Last Seen'].map(h => <th key={h}>{h}</th>)}
+                {['ID', 'Status', 'Last Seen'].map(h => <th key={h}>{h}</th>)}
               </tr>
             </thead>
             <tbody>
@@ -110,7 +110,6 @@ export default function OverviewPage() {
                   <td className="mono dim">
                     <Link to={`/devices/${d.id}`} className="row-anchor">{d.id}</Link>
                   </td>
-                  <td>{d.name}</td>
                   <td>
                     <span className={`status-dot ${d.status}`}>●</span>
                     {' '}

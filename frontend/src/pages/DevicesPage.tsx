@@ -9,7 +9,7 @@ const fmt = (iso: string) =>
     hour: '2-digit', minute: '2-digit', second: '2-digit',
   })
 
-const COLS = ['ID', 'Name', 'Status', 'Temp (°C)', 'Battery (%)', 'Last Seen'] as const
+const COLS = ['ID', 'Status', 'Temp (°C)', 'Battery (%)', 'Last Seen'] as const
 
 export default function DevicesPage() {
   const { data: devices, isLoading, isError } = useQuery({
@@ -79,7 +79,6 @@ export default function DevicesPage() {
                   <td className="mono dim">
                     <Link to={`/devices/${d.id}`} className="row-anchor">{d.id}</Link>
                   </td>
-                  <td>{d.name}</td>
                   <td>
                     <span className={`status-dot ${d.status}`}>●</span>
                     {' '}
