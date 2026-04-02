@@ -1,11 +1,14 @@
 import logging
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from devices.models import Device, DeviceStatus
 
 logger = logging.getLogger(__name__)
+
+OFFLINE_THRESHOLD_SECONDS = 10
 
 
 def get_or_create_device(db: Session, device_id: str) -> Device:
@@ -26,3 +29,17 @@ def get_or_create_device(db: Session, device_id: str) -> Device:
         device.last_seen = now
 
     return device
+
+
+def mark_offline_devices(db: Session) -> list[Device]:
+    """Mark devices as offline if last_seen exceeded the threshold. Returns affected devices."""
+    cutoff = datetime.now(timezone.utc) - timedelta(seconds=OFFLINE_THRESHOLD_SECONDS)
+    stmt = select(Device).where(
+        Device.status == DeviceStatus.online,
+        Device.last_seen < cutoff,
+    )
+    stale = db.scalars(stmt).all()
+    for device in stale:
+        device.status = DeviceStatus.offline
+        logger.info(f"device offline: {device.id} (last_seen={device.last_seen})")
+    return list(stale)
