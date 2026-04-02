@@ -8,7 +8,7 @@ from devices.models import Device, DeviceStatus
 
 logger = logging.getLogger(__name__)
 
-OFFLINE_THRESHOLD_SECONDS = 10
+OFFLINE_THRESHOLD_SECONDS = 8
 
 
 def get_or_create_device(db: Session, device_id: str) -> Device:

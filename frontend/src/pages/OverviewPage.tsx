@@ -25,7 +25,7 @@ export default function OverviewPage() {
       const res = await client.get<ApiResponse<Device[]>>('/devices')
       return res.data.data ?? []
     },
-    refetchInterval: 10_000,
+    refetchInterval: 3_000,
   })
 
   const { data: alertPage } = useQuery({
@@ -37,10 +37,10 @@ export default function OverviewPage() {
     refetchInterval: 15_000,
   })
 
-  const total   = devices?.length ?? '‚Äî'
-  const online  = devices?.filter(d => d.status === 'online').length ?? '‚Äî'
-  const offline = devices?.filter(d => d.status === 'offline').length ?? '‚Äî'
-  const alerts  = alertPage?.total ?? '‚Äî'
+  const total   = devices?.length ?? '‚Ä?
+  const online  = devices?.filter(d => d.status === 'online').length ?? '‚Ä?
+  const offline = devices?.filter(d => d.status === 'offline').length ?? '‚Ä?
+  const alerts  = alertPage?.total ?? '‚Ä?
 
   const recentAlerts = alertPage?.items ?? []
 
@@ -111,7 +111,7 @@ export default function OverviewPage() {
                     <Link to={`/devices/${d.id}`} className="row-anchor">{d.id}</Link>
                   </td>
                   <td>
-                    <span className={`status-dot ${d.status}`}>‚óè</span>
+                    <span className={`status-dot ${d.status}`}>‚ó?/span>
                     {' '}
                     <span className={d.status === 'online' ? 'txt-online' : 'txt-offline'}>
                       {d.status.toUpperCase()}

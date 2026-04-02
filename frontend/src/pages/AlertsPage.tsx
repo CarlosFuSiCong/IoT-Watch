@@ -29,7 +29,7 @@ export default function AlertsPage() {
       const res = await client.get<ApiResponse<AlertPage>>('/alerts?limit=100')
       return res.data.data
     },
-    refetchInterval: 15_000,
+    refetchInterval: 3_000,
   })
 
   const items = data?.items ?? []
@@ -48,7 +48,7 @@ export default function AlertsPage() {
       </header>
 
       {isError && (
-        <p className="state-msg error">ERR â€” could not reach backend</p>
+        <p className="state-msg error">ERR â€?could not reach backend</p>
       )}
 
       {!isLoading && !isError && items.length === 0 && (

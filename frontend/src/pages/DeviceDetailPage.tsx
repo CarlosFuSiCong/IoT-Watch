@@ -47,7 +47,7 @@ export default function DeviceDetailPage() {
       return res.data.data
     },
     enabled: !!id,
-    refetchInterval: 10_000,
+    refetchInterval: 3_000,
   })
 
   const { data: telemetryPage, isLoading: telLoading } = useQuery({
@@ -59,13 +59,13 @@ export default function DeviceDetailPage() {
       return res.data.data
     },
     enabled: !!id,
-    refetchInterval: 10_000,
+    refetchInterval: 3_000,
   })
 
   const items = telemetryPage?.items ?? []
   const latest = items[0]
 
-  // Chart data: oldest â†’ newest
+  // Chart data: oldest â†?newest
   const chartData = [...items].reverse().map(r => ({
     t:    fmtTime(r.timestamp),
     temp: r.temperature,
@@ -74,7 +74,7 @@ export default function DeviceDetailPage() {
   if (deviceError) {
     return (
       <section className="page">
-        <p className="state-msg error">ERR â€” device not found</p>
+        <p className="state-msg error">ERR â€?device not found</p>
       </section>
     )
   }
@@ -122,7 +122,7 @@ export default function DeviceDetailPage() {
       {/* Temperature chart */}
       {chartData.length > 1 && (
         <div className="chart-section">
-          <h2 className="section-title">TEMPERATURE â€” LAST {chartData.length} READINGS</h2>
+          <h2 className="section-title">TEMPERATURE â€?LAST {chartData.length} READINGS</h2>
           <div className="chart-wrap">
             <ResponsiveContainer width="100%" height={220}>
               <LineChart data={chartData} margin={{ top: 8, right: 16, left: -16, bottom: 0 }}>

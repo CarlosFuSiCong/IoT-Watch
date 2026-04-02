@@ -18,7 +18,7 @@ export default function DevicesPage() {
       const res = await client.get<ApiResponse<Device[]>>('/devices')
       return res.data.data ?? []
     },
-    refetchInterval: 10_000,
+    refetchInterval: 3_000,
   })
 
   // Fetch latest telemetry for each device in parallel
@@ -31,7 +31,7 @@ export default function DevicesPage() {
         )
         return res.data.data?.items[0] ?? null
       },
-      refetchInterval: 10_000,
+      refetchInterval: 3_000,
       enabled: !!devices,
     })),
   })
@@ -60,7 +60,7 @@ export default function DevicesPage() {
         </div>
       </header>
 
-      {isError && <p className="state-msg error">ERR ‚Äî could not reach backend</p>}
+      {isError && <p className="state-msg error">ERR ‚Ä?could not reach backend</p>}
 
       {!isLoading && !isError && total === 0 && (
         <p className="state-msg">NO DEVICES REGISTERED</p>
@@ -80,17 +80,17 @@ export default function DevicesPage() {
                     <Link to={`/devices/${d.id}`} className="row-anchor">{d.id}</Link>
                   </td>
                   <td>
-                    <span className={`status-dot ${d.status}`}>‚óè</span>
+                    <span className={`status-dot ${d.status}`}>‚ó?/span>
                     {' '}
                     <span className={d.status === 'online' ? 'txt-online' : 'txt-offline'}>
                       {d.status.toUpperCase()}
                     </span>
                   </td>
                   <td className={latest && latest.temperature > 35 ? 'txt-offline' : ''}>
-                    {latest ? latest.temperature.toFixed(1) : '‚Äî'}
+                    {latest ? latest.temperature.toFixed(1) : '‚Ä?}
                   </td>
                   <td className={latest && latest.battery < 20 ? 'txt-offline' : ''}>
-                    {latest ? latest.battery.toFixed(0) : '‚Äî'}
+                    {latest ? latest.battery.toFixed(0) : '‚Ä?}
                   </td>
                   <td className="dim">{fmt(d.last_seen)}</td>
                 </tr>
