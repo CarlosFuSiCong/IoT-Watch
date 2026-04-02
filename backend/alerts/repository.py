@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime, timedelta, timezone
 
-from sqlalchemy import select, and_
+from sqlalchemy import func, select, and_
 from sqlalchemy.orm import Session
 
 from alerts.models import Alert, AlertType
@@ -14,6 +14,31 @@ ALERT_DEDUPLICATION_SECONDS = 300
 class AlertThresholds:
     HIGH_TEMPERATURE = 35.0
     LOW_BATTERY = 20.0
+
+
+def list_alerts(
+    db: Session,
+    device_id: str | None = None,
+    alert_type: AlertType | None = None,
+    page: int = 1,
+    limit: int = 50,
+) -> tuple[list[Alert], int]:
+    filters = []
+    if device_id:
+        filters.append(Alert.device_id == device_id)
+    if alert_type:
+        filters.append(Alert.type == alert_type)
+
+    base = select(Alert).where(*filters)
+    total = db.scalar(select(func.count()).select_from(base.subquery())) or 0
+    items = list(
+        db.scalars(
+            base.order_by(Alert.timestamp.desc())
+            .offset((page - 1) * limit)
+            .limit(limit)
+        ).all()
+    )
+    return items, total
 
 
 def create_alert(

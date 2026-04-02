@@ -31,6 +31,14 @@ def get_or_create_device(db: Session, device_id: str) -> Device:
     return device
 
 
+def list_devices(db: Session) -> list[Device]:
+    return list(db.scalars(select(Device).order_by(Device.created_at)).all())
+
+
+def get_device(db: Session, device_id: str) -> Device | None:
+    return db.get(Device, device_id)
+
+
 def mark_offline_devices(db: Session) -> list[Device]:
     """Mark devices as offline if last_seen exceeded the threshold. Returns affected devices."""
     cutoff = datetime.now(timezone.utc) - timedelta(seconds=OFFLINE_THRESHOLD_SECONDS)
