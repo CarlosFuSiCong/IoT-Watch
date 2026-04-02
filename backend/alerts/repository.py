@@ -8,7 +8,7 @@ from alerts.models import Alert, AlertType
 
 logger = logging.getLogger(__name__)
 
-ALERT_DEDUPLICATION_SECONDS = 300
+ALERT_DEDUPLICATION_SECONDS = 60
 
 
 class AlertThresholds:

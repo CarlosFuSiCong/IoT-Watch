@@ -6,6 +6,16 @@ from sqlalchemy.orm import Session
 from telemetry.models import SensorData
 
 
+def get_previous_telemetry(db: Session, device_id: str, before_timestamp: datetime) -> SensorData | None:
+    """Return the most recent reading strictly before before_timestamp, or None."""
+    return db.scalars(
+        select(SensorData)
+        .where(SensorData.device_id == device_id, SensorData.timestamp < before_timestamp)
+        .order_by(SensorData.timestamp.desc())
+        .limit(1)
+    ).first()
+
+
 def list_telemetry(
     db: Session,
     device_id: str,
