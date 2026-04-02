@@ -7,10 +7,10 @@ from telemetry.repository import list_telemetry
 from telemetry.schemas import SensorDataResponse, TelemetryPage
 from schemas import ApiResponse
 
-router = APIRouter(tags=["telemetry"])
+router = APIRouter(prefix="/devices", tags=["telemetry"])
 
 
-@router.get("/devices/{device_id}/telemetry", response_model=ApiResponse[TelemetryPage])
+@router.get("/{device_id}/telemetry", response_model=ApiResponse[TelemetryPage])
 def get_telemetry(
     device_id: str,
     page: int = Query(default=1, ge=1),
