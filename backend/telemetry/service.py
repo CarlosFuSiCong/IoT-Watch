@@ -7,6 +7,7 @@ from pydantic import BaseModel, ValidationError
 from database import SessionLocal
 from devices.repository import get_or_create_device
 from telemetry.repository import create_sensor_data
+from alerts.service import check_telemetry_alerts
 
 logger = logging.getLogger(__name__)
 
@@ -37,6 +38,13 @@ def process_message(topic: str, raw: bytes) -> None:
             humidity=payload.humidity,
             battery=payload.battery,
             timestamp=payload.timestamp,
+        )
+        # check temperature and battery alerts
+        check_telemetry_alerts(
+            db,
+            device_id=payload.device_id,
+            temperature=payload.temperature,
+            battery=payload.battery,
         )
         db.commit()
         logger.info(

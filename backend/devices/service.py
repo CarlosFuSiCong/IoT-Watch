@@ -3,6 +3,7 @@ import logging
 
 from database import SessionLocal
 from devices.repository import mark_offline_devices
+from alerts.service import create_offline_alerts
 
 logger = logging.getLogger(__name__)
 
@@ -18,6 +19,9 @@ async def offline_checker() -> None:
         try:
             stale = mark_offline_devices(db)
             if stale:
+                # create offline alerts for newly stale devices
+                device_ids = [device.id for device in stale]
+                create_offline_alerts(db, device_ids)
                 db.commit()
         except Exception:
             db.rollback()
