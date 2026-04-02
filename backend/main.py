@@ -25,6 +25,11 @@ async def lifespan(app: FastAPI):
     task.cancel()
     await asyncio.gather(task, return_exceptions=True)
     mqtt.stop()
+    # Clean up simulator subprocess if it outlived the backend
+    from demo.router import _proc, _lock
+    with _lock:
+        if _proc is not None and _proc.poll() is None:
+            _proc.terminate()
 
 
 app = FastAPI(title="IoT Watch API", version="0.1.0", lifespan=lifespan)
