@@ -53,7 +53,10 @@ export default function TelemetryChart({ items }: Props) {
                 background: '#fff',
               }}
               itemStyle={{ color: 'var(--fg)' }}
-              formatter={(v: number) => [`${v.toFixed(1)} ${DEG_C}`, 'Temp']}
+              formatter={(v) => {
+                const n = typeof v === 'number' ? v : Number(Array.isArray(v) ? v[0] : v)
+                return [`${n.toFixed(1)} ${DEG_C}`, 'Temp'] as [string, string]
+              }}
             />
             <ReferenceLine
               y={35}

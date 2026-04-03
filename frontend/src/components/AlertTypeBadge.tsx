@@ -1,6 +1,6 @@
 import type { AlertType } from '../api/types'
 
-export const TYPE_LABEL: Record<AlertType, string> = {
+const TYPE_LABEL: Record<AlertType, string> = {
   HIGH_TEMPERATURE: 'HIGH TEMP',
   LOW_BATTERY:      'LOW BATT',
   OFFLINE:          'OFFLINE',
